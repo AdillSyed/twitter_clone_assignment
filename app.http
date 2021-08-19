@@ -49,21 +49,21 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvZ
 
 #### api-7
 
-GET http://localhost:3000/tweets/8/likes/
+GET http://localhost:3000/tweets/7/likes/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvZUJpZGVuIiwiaWF0IjoxNjI1NzM0NDM2fQ.6oQsDzOz5bgCoBJQZXurgHAz4qSHzbYTb1ZeT5qBWDo
 
 #### api-8
 
-GET http://localhost:3000/tweets/2/replies/
+GET http://localhost:3000/tweets/8/replies/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvZUJpZGVuIiwiaWF0IjoxNjI1NzM0NDM2fQ.6oQsDzOz5bgCoBJQZXurgHAz4qSHzbYTb1ZeT5qBWDo
 
 ### api-9 
 
 GET http://localhost:3000/user/tweets/
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvZUJpZGVuIiwiaWF0IjoxNjI1NzM0NDM2fQ.6oQsDzOz5bgCoBJQZXurgHAz4qSHzbYTb1ZeT5qBWDo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvZUJpZGVuIiwiaWF0IjoxNjI1NzYxODAyfQ.DzNQVf_Va8uwwPXIeUs87wqcMePkahtcN220MqHzBes
 
 
 ##### api-11
 
-DELETE http://localhost:3000/tweets/6
+DELETE http://localhost:3000/tweets/7
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvZUJpZGVuIiwiaWF0IjoxNjI1NzM0NDM2fQ.6oQsDzOz5bgCoBJQZXurgHAz4qSHzbYTb1ZeT5qBWDo

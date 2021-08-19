@@ -30,7 +30,7 @@ const initializeDbAndServer = async () => {
 initializeDbAndServer();
 
 const validatePassword = (password) => {
-  return password.length > 5;
+  return password.length > 6;
 };
 
 const authenticateToken = (request, response, next) => {
@@ -115,10 +115,12 @@ const checkValidUserTweetId = async (request, response, next) => {
       WHERE
         user.username = '${username}';`;
   const userTweets = await database.all(getUserTweetIds);
+  console.log(userTweets);
   let tweetIds = [];
   for (let id of userTweets) {
-    tweetIds.push(id.user_id);
+    tweetIds.push(id.tweet_id);
   }
+  console.log(tweetIds);
   if (tweetIds.includes(tweetId) === false) {
     response.status(401);
     response.send("Invalid Request");
@@ -193,7 +195,8 @@ app.get("/user/", authenticateToken, async (request, response) => {
   response.send(tweets);
 });
 
-//api-3
+//api-3 Returns the latest tweets of people whom the user follows. Return 4 tweets at a time
+
 app.get("/user/tweets/feed/", authenticateToken, async (request, response) => {
   let { username } = request;
   let getUserId = `SELECT user_id FROM user WHERE username = '${username}';`;
@@ -203,7 +206,7 @@ app.get("/user/tweets/feed/", authenticateToken, async (request, response) => {
       SELECT 
         user.username,
         tweet,
-        date_time
+        date_time AS dateTime
       FROM 
         tweet JOIN follower ON tweet.user_id = follower.following_user_id JOIN user ON tweet.user_id = user.user_id
       WHERE 
@@ -218,7 +221,8 @@ app.get("/user/tweets/feed/", authenticateToken, async (request, response) => {
   response.send(tweets);
 });
 
-//api-4
+//api-4 Returns the list of all names of people whom the user follows
+
 app.get("/user/following/", authenticateToken, async (request, response) => {
   let { username } = request;
   const userFollowingId = `
@@ -251,7 +255,8 @@ app.get("/user/following/", authenticateToken, async (request, response) => {
   response.send(n);
 });
 
-/// api-5
+/// api-5 Returns the list of all names of people who follows the user
+
 app.get("/user/followers/", authenticateToken, async (request, response) => {
   const { username } = request;
   const getFollowers = `
@@ -288,7 +293,8 @@ app.get("/user/followers/", authenticateToken, async (request, response) => {
   response.send(u);
 });
 
-//api-6
+//api-6 (1) If the user requests a tweet other than the users he is following.
+// (2) If the user requests a tweet of the user he is following, return the tweet, likes count, replies count and date-time
 
 app.get(
   "/tweets/:tweetId/",
@@ -321,7 +327,7 @@ app.get(
   }
 );
 
-//api-7
+//api-7 If the user requests a tweet of a user he is following, return the list of usernames who liked the tweet
 app.get(
   "/tweets/:tweetId/likes/",
   authenticateToken,
@@ -348,7 +354,7 @@ app.get(
   }
 );
 
-//api-8
+//api-8 If the user requests a tweet of a user he is following, return the list of replies.
 
 app.get(
   "/tweets/:tweetId/replies/",
@@ -367,27 +373,31 @@ app.get(
       WHERE 
         tweet_id = ${tweetId};`;
     const usersAndReplies = await database.all(getUserAndReply);
+    console.log(usersAndReplies);
     response.send({
-      tweet: userTweet.tweet,
       replies: usersAndReplies,
     });
   }
 );
 
-//api-9
+//api-9 Returns a list of all tweets of the user
 
 app.get("/user/tweets/", authenticateToken, async (request, response) => {
   let { username } = request;
+
   const getUserId = `SELECT user_id FROM user WHERE username = '${username}';`;
+
   const userId = await database.get(getUserId);
+
   let usrId = userId.user_id;
   let twtIds = [];
   const getTweetIds = `SELECT tweet_id FROM tweet WHERE user_id = ${usrId};`;
   const tweetIds = await database.all(getTweetIds);
+
   for (let id of tweetIds) {
     twtIds.push(id.tweet_id);
   }
-  console.log(twtIds);
+
   let tweets = [];
   for (let twtId of twtIds) {
     const getTweetDetails = `
@@ -395,17 +405,18 @@ app.get("/user/tweets/", authenticateToken, async (request, response) => {
         tweet,
         (SELECT COUNT(*) FROM like WHERE tweet_id = ${twtId}) AS likes,
         (SELECT COUNT(*) FROM reply WHERE tweet_id = ${twtId}) AS replies,
-        date_time
+        date_time AS dateTime
       FROM
-        tweet;`;
+        tweet
+      WHERE 
+        tweet_id = ${twtId};`;
     const twtDetails = await database.get(getTweetDetails);
     tweets.push(twtDetails);
-    console.log(twtDetails);
   }
   response.send(tweets);
 });
 
-//api-10
+//api-10 Create a tweet in the tweet table
 
 app.post("/user/tweets/", authenticateToken, async (request, response) => {
   let { username } = request;
@@ -421,16 +432,21 @@ app.post("/user/tweets/", authenticateToken, async (request, response) => {
   response.send("Created a Tweet");
 });
 
-//api-11
+//api-11 If the user deletes his tweet
 
 app.delete(
   "/tweets/:tweetId/",
   authenticateToken,
   checkValidUserTweetId,
   async (request, response) => {
-    const { tweetId } = request.params;
-    const deleteTweetRequest = `DELETE FROM tweet WHERE tweet_id = ${tweetId};`;
-    await database.run(deleteTweetRequest);
+    let { tweetId } = request.params;
+    console.log(tweetId);
+    const deleteTweet = `
+      DELETE FROM
+        tweet 
+      WHERE 
+        tweet_id = ${tweetId};`;
+    await database.run(deleteTweet);
     response.send("Tweet Removed");
   }
 );
